@@ -14,11 +14,13 @@ This may contain a commit message, or it may be empty (in which case you will ge
 
 Before any formatting or linting, run `git diff` and `git diff --staged` using Bash to capture the **substantive changes** the user made. Save this context — you will need it for the commit message later. Also run `git status` to see untracked files.
 
-## Step 2: Run SwiftFormat + SwiftLint
+## Step 2: Run SwiftFormat + SwiftLint and Generate Commit Message
 
-Spawn a single Task agent (model: sonnet, subagent_type: general-purpose) to format and lint all staged and modified Swift files.
+Launch the following agents **in parallel in a single message**. The commit message agent works from the diff captured in Step 1, so it does not need to wait for formatting/linting to finish.
 
-**Prompt for the agent:**
+### Agent A — SwiftFormat + SwiftLint (sonnet)
+
+Spawn a Task agent (model: sonnet, subagent_type: general-purpose):
 
 > You are a Swift formatting and linting agent. Your job is to run SwiftFormat and SwiftLint on the Swift files that are about to be committed, and fix any issues.
 >
@@ -35,19 +37,11 @@ Spawn a single Task agent (model: sonnet, subagent_type: general-purpose) to for
 > - Do NOT create new files.
 > - Do NOT stage or commit anything — just fix the files.
 
-Wait for this agent to complete before proceeding.
+### Agent B — Commit Message (sonnet) — skip if user provided a message in `$ARGUMENTS`
 
-## Step 3: Generate Commit Message (if needed)
-
-If the user provided a commit message in `$ARGUMENTS`, use that message. Skip to Step 5.
-
-If no commit message was provided, spawn a Task agent (model: sonnet, subagent_type: general-purpose) to generate one.
-
-**Prompt for the agent:**
+Spawn a Task agent (model: sonnet, subagent_type: general-purpose):
 
 > You are a commit message writer. Analyze the code changes and produce a clear, concise git commit message.
->
-> Context: The diff below shows the **real changes** the user made. Any whitespace or formatting differences were applied automatically by SwiftFormat/SwiftLint and must be completely ignored — do NOT mention formatting, linting, style fixes, or whitespace adjustments in the commit message. Focus exclusively on the functional, logical, and behavioral changes.
 >
 > {paste the git diff captured in Step 1 here}
 >
@@ -59,14 +53,14 @@ If no commit message was provided, spawn a Task agent (model: sonnet, subagent_t
 >
 > Return ONLY the commit message text, nothing else.
 
-Wait for this agent to complete.
+Wait for both agents to complete before proceeding.
 
-## Step 4: Ensure We Are on a Feature Branch
+## Step 3: Ensure We Are on a Feature Branch
 
 Before committing, make sure changes are not committed directly to `main`.
 
 1. Run `git branch --show-current` to determine the current branch.
-2. **If already on a branch other than `main`** — stay on it and proceed to Step 5.
+2. **If already on a branch other than `main`** — stay on it and proceed to Step 4.
 3. **If on `main`** — create a new branch using the `git-branch-naming` skill:
    - Determine the appropriate branch type (`feat`, `fix`, `chore`, `refactor`, `docs`, `hotfix`) from the changes captured in Step 1.
    - Derive a short kebab-case description from the changes.
@@ -74,10 +68,10 @@ Before committing, make sure changes are not committed directly to `main`.
    - Propose the branch name to the user before creating it.
    - Create and switch to the branch: `git switch -c <branch-name>`
 
-## Step 5: Stage and Commit
+## Step 4: Stage and Commit
 
 1. Stage all relevant changes using `git add` on specific files (use `git status` to identify them). Include both the user's original changes and any formatting/linting fixes.
-2. Create the commit using the message from Step 3 (or the user-provided message). Use a HEREDOC to pass the message:
+2. Create the commit using the message from Step 2 (or the user-provided message). Use a HEREDOC to pass the message:
    ```
    git commit -m "$(cat <<'EOF'
    <commit message here>
