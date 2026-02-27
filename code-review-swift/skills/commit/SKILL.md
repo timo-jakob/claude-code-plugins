@@ -39,7 +39,7 @@ Wait for this agent to complete before proceeding.
 
 ## Step 3: Generate Commit Message (if needed)
 
-If the user provided a commit message in `$ARGUMENTS`, use that message. Skip to Step 4.
+If the user provided a commit message in `$ARGUMENTS`, use that message. Skip to Step 5.
 
 If no commit message was provided, spawn a Task agent (model: sonnet, subagent_type: general-purpose) to generate one.
 
@@ -61,7 +61,20 @@ If no commit message was provided, spawn a Task agent (model: sonnet, subagent_t
 
 Wait for this agent to complete.
 
-## Step 4: Stage and Commit
+## Step 4: Ensure We Are on a Feature Branch
+
+Before committing, make sure changes are not committed directly to `main`.
+
+1. Run `git branch --show-current` to determine the current branch.
+2. **If already on a branch other than `main`** — stay on it and proceed to Step 5.
+3. **If on `main`** — create a new branch using the `git-branch-naming` skill:
+   - Determine the appropriate branch type (`feat`, `fix`, `chore`, `refactor`, `docs`, `hotfix`) from the changes captured in Step 1.
+   - Derive a short kebab-case description from the changes.
+   - Ask the user once if there is a GitHub Issue number. If they say no or don't know, proceed without one.
+   - Propose the branch name to the user before creating it.
+   - Create and switch to the branch: `git switch -c <branch-name>`
+
+## Step 5: Stage and Commit
 
 1. Stage all relevant changes using `git add` on specific files (use `git status` to identify them). Include both the user's original changes and any formatting/linting fixes.
 2. Create the commit using the message from Step 3 (or the user-provided message). Use a HEREDOC to pass the message:
@@ -71,8 +84,8 @@ Wait for this agent to complete.
    EOF
    )"
    ```
-3. Run `git status` to confirm the commit succeeded.
-4. Show the user the commit hash and message.
+3. Run `git log --oneline -1` and `git status` to confirm the commit succeeded.
+4. Show the user the commit hash, message, and the branch it was committed to.
 
 ## Important Rules
 
