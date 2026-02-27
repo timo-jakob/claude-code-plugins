@@ -29,19 +29,7 @@ Spawn the agent with `run_in_background: true`.
 
 ### Agent B — Commit Message (sonnet) — skip if user provided a message in `$ARGUMENTS`
 
-Spawn a Task agent (model: sonnet, subagent_type: general-purpose):
-
-> You are a commit message writer. Analyze the code changes and produce a clear, concise git commit message.
->
-> {paste the git diff captured in Step 1 here}
->
-> Write a commit message following conventional commit style:
-> - First line: imperative summary, max 72 characters (e.g., "Add user authentication flow")
-> - If warranted, add a blank line followed by a body paragraph explaining the "why" (not the "what")
-> - Do NOT mention formatting, linting, or style changes
-> - Focus on what the change does for the user/system, not on code mechanics
->
-> Return ONLY the commit message text, nothing else.
+Use the `commit-message` agent. Pass it the git diff captured in Step 1.
 
 Wait for both agents to complete before proceeding.
 
