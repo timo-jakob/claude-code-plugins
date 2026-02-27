@@ -1,5 +1,5 @@
 {
-  "name": "code-review",
+  "name": "code-review-swift",
   "description": "Comprehensive Swift code review plugin that spawns 6 specialized agents in parallel to analyze bugs, security, performance, Swift 6 compliance, code quality, and test coverage.",
   "version": "1.0.0",
   "author": {
