@@ -1,0 +1,26 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-code-plugins",
+  "description": "Custom Claude Code plugins for Swift development",
+  "owner": {
+    "name": "Timo Jakob"
+  },
+  "plugins": [
+    {
+      "name": "dev-swift",
+      "description": "Swift development plugin with code review, formatting/linting, and Swift-specific tooling.",
+      "version": "1.0.0",
+      "author": { "name": "Timo Jakob" },
+      "source": "./dev-swift",
+      "category": "development"
+    },
+    {
+      "name": "development",
+      "description": "General development plugin with agents and skills.",
+      "version": "1.0.0",
+      "author": { "name": "Timo Jakob" },
+      "source": "./development",
+      "category": "development"
+    }
+  ]
+}
