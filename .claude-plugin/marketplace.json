@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "claude-code-plugins",
+  "name": "timos-claude-code-plugins",
   "description": "Custom Claude Code plugins for Swift development",
   "owner": {
     "name": "Timo Jakob"
