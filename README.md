@@ -4,18 +4,34 @@ A collection of plugins for [Claude Code](https://docs.anthropic.com/en/docs/cla
 
 ## Plugins
 
-### code-review-swift
+### development
 
-Comprehensive Swift code review and commit tooling.
+Language-agnostic workflow tooling for git operations, committing, and branch management.
 
 **Skills:**
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| Review | `/code-review-swift:review [paths]` | Spawns 6 specialized agents in parallel to analyze bugs, security, performance, Swift 6 compliance, code quality, and test coverage |
-| Commit | `/code-review-swift:commit [message]` | Runs SwiftFormat + SwiftLint, fixes issues, generates a commit message (if not provided), and commits |
+| Commit | `/development:commit [message]` | Runs formatting/linting (delegates to language-specific plugin), generates a commit message, ensures a feature branch, and commits |
+| Git Branch Naming | `/development:git-branch-naming` | Defines the branch naming convention (`<type>/<issue>-<description>`) and creates properly named branches |
 
-**Review Agents:**
+**Agents:**
+
+| Agent | Model | Focus |
+|-------|-------|-------|
+| Commit Message | sonnet | Generates clear commit messages from diffs, ignoring formatting/linting noise |
+
+### dev-swift
+
+Swift-specific development tooling — code review and formatting/linting.
+
+**Skills:**
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Review | `/dev-swift:review [paths]` | Spawns 6 specialized agents in parallel to analyze bugs, security, performance, Swift 6 compliance, code quality, and test coverage |
+
+**Agents:**
 
 | Agent | Model | Focus |
 |-------|-------|-------|
@@ -25,22 +41,26 @@ Comprehensive Swift code review and commit tooling.
 | Swift 6 Compliance | sonnet | Strict concurrency, typed throws, modern syntax |
 | Code Quality | sonnet | Naming, SOLID, readability, dead code, API design |
 | Test Reviewer | sonnet | Coverage gaps, assertion quality, flaky tests |
+| Swift Lint & Format | sonnet | Runs SwiftFormat and SwiftLint, fixes issues in-place |
 
 ## Usage
 
-Load a plugin locally during development:
+Load plugins locally during development:
 
 ```sh
-claude --plugin-dir ./code-review-swift
+claude --plugin-dir ./development --plugin-dir ./dev-swift
 ```
 
-Then use the slash commands inside any Swift project:
+Then use the slash commands:
 
 ```
-/code-review-swift:review           # review all Swift files
-/code-review-swift:review Sources/  # review a specific directory
-/code-review-swift:commit            # format, lint, generate message, commit
-/code-review-swift:commit "Fix auth" # format, lint, commit with given message
+# Development workflow
+/development:commit              # format, lint, generate message, commit
+/development:commit "Fix auth"   # format, lint, commit with given message
+
+# Swift code review
+/dev-swift:review                # review all Swift files
+/dev-swift:review Sources/       # review a specific directory
 ```
 
 ## License
