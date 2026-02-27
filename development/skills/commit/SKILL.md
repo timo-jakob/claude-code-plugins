@@ -1,10 +1,10 @@
 ---
 name: commit
-description: Commit Swift code changes after running SwiftFormat and SwiftLint, fixing any issues, and generating a commit message
+description: Commit code changes after running formatting/linting and generating a commit message
 disable-model-invocation: false
 ---
 
-You are a commit orchestrator for Swift projects. The user wants to commit their changes.
+You are a commit orchestrator. The user wants to commit their changes.
 
 **User input:** $ARGUMENTS
 
@@ -14,28 +14,18 @@ This may contain a commit message, or it may be empty (in which case you will ge
 
 Before any formatting or linting, run `git diff` and `git diff --staged` using Bash to capture the **substantive changes** the user made. Save this context — you will need it for the commit message later. Also run `git status` to see untracked files.
 
-## Step 2: Run SwiftFormat + SwiftLint and Generate Commit Message
+## Step 2: Format/Lint and Generate Commit Message
 
 Launch the following agents **in parallel in a single message**. The commit message agent works from the diff captured in Step 1, so it does not need to wait for formatting/linting to finish.
 
-### Agent A — SwiftFormat + SwiftLint (sonnet)
+### Agent A — Formatting + Linting
 
-Spawn a Task agent (model: sonnet, subagent_type: general-purpose):
+Detect the project language from the changed files and look for a language-specific formatting/linting agent in the appropriate plugin. For example:
 
-> You are a Swift formatting and linting agent. Your job is to run SwiftFormat and SwiftLint on the Swift files that are about to be committed, and fix any issues.
->
-> Steps:
-> 1. Run `git status` to identify modified, staged, and untracked Swift files.
-> 2. Run `swiftformat` on all affected Swift files. If a `.swiftformat` config exists in the project, it will be picked up automatically.
-> 3. Run `swiftlint lint` on all affected Swift files. If warnings or errors are reported, fix them directly in the source files using Edit. Do NOT use `swiftlint --fix` — review each issue and fix it properly.
-> 4. Re-run `swiftlint lint` to verify all issues are resolved. If issues remain, fix them and repeat until clean.
-> 5. Report what you formatted and what lint issues you fixed (if any).
->
-> Important:
-> - If `swiftformat` or `swiftlint` is not installed, inform the user and skip that step.
-> - Do NOT modify non-Swift files.
-> - Do NOT create new files.
-> - Do NOT stage or commit anything — just fix the files.
+- **Swift projects** → use the `swift-lint-format` agent from the `dev-swift` plugin
+- **Other languages** → if a matching agent exists in an installed plugin, use it; otherwise skip this step and inform the user that no formatter/linter is configured for this language
+
+Spawn the agent with `run_in_background: true`.
 
 ### Agent B — Commit Message (sonnet) — skip if user provided a message in `$ARGUMENTS`
 
@@ -48,7 +38,7 @@ Spawn a Task agent (model: sonnet, subagent_type: general-purpose):
 > Write a commit message following conventional commit style:
 > - First line: imperative summary, max 72 characters (e.g., "Add user authentication flow")
 > - If warranted, add a blank line followed by a body paragraph explaining the "why" (not the "what")
-> - Do NOT mention SwiftFormat, SwiftLint, formatting, linting, or style changes
+> - Do NOT mention formatting, linting, or style changes
 > - Focus on what the change does for the user/system, not on code mechanics
 >
 > Return ONLY the commit message text, nothing else.
@@ -85,5 +75,5 @@ Before committing, make sure changes are not committed directly to `main`.
 
 - NEVER mention formatting or linting in the commit message. These are invisible hygiene steps.
 - NEVER skip the formatting/linting step, even if the user says "quick commit".
-- If SwiftFormat or SwiftLint report errors that cannot be auto-fixed, inform the user and ask how to proceed before committing.
+- If the formatter or linter reports errors that cannot be auto-fixed, inform the user and ask how to proceed before committing.
 - Do NOT push to remote unless the user explicitly asks.
