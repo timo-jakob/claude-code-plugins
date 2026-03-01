@@ -46,8 +46,7 @@ fi
 # ── Delete local branches already merged into main ───────────────────────────
 log "Finding local branches merged into '$MAIN_BRANCH'..."
 
-PROTECTED="^(\*|  (main|master|develop|staging|release/.+))$"
-MERGED=$(git branch --merged "$MAIN_BRANCH" | grep -vE "$PROTECTED" || true)
+MERGED=$(git branch --merged "$MAIN_BRANCH" | grep -vE "^\*|^  (main|master|develop|staging|release/.+)$" || true)
 
 if [ -z "$MERGED" ]; then
     success "No merged local branches to delete."
