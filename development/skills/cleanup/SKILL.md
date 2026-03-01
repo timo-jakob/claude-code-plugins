@@ -17,11 +17,11 @@ You are a git cleanup orchestrator. The user wants to tidy up their local reposi
 
 ## Step 1: Locate the cleanup script
 
-Use Glob to find `cleanup.sh` inside the skill directory (it lives alongside this SKILL.md file inside the installed plugin). Search for `**/development/skills/cleanup/cleanup.sh` across common plugin locations:
+Use Glob to find `cleanup.sh` inside the skill's `scripts/` directory (it lives at `scripts/cleanup.sh` relative to this SKILL.md file inside the installed plugin). Search for `**/development/skills/cleanup/scripts/cleanup.sh` across common plugin locations:
 
-- `~/.claude/plugins/**/development/skills/cleanup/cleanup.sh`
-- `~/.claude/**/cleanup.sh`
-- Any path matching `**/timos-claude-code-plugins/development/skills/cleanup/cleanup.sh`
+- `~/.claude/plugins/**/development/skills/cleanup/scripts/cleanup.sh`
+- `~/.claude/**/cleanup/scripts/cleanup.sh`
+- Any path matching `**/timos-claude-code-plugins/development/skills/cleanup/scripts/cleanup.sh`
 
 If the script is found, proceed to Step 2. If it cannot be located, fall back to Step 3.
 
