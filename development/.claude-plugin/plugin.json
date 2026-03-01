@@ -6,5 +6,18 @@
     "name": "Timo Jakob"
   },
   "license": "MIT",
-  "keywords": ["git", "commit", "branch-naming", "workflow"]
+  "keywords": ["git", "commit", "branch-naming", "workflow"],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/skills/cleanup/scripts/cleanup-hook.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
