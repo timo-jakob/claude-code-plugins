@@ -3,7 +3,7 @@ name: cleanup
 description: >
   Cleans up the local git environment after merging a branch to main.
   Prunes stale remote-tracking branches and deletes local branches that
-  are already merged into main. Run this after a PR is merged.
+  are already merged into main. Run this after a PR is merged to main.
 disable-model-invocation: true
 ---
 
